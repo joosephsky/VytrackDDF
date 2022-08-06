@@ -2,6 +2,7 @@ package com.vytrack.utilities;
 
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
 import org.testng.Assert;
 
 import java.io.FileInputStream;
@@ -21,6 +22,11 @@ public class ExcelUtil {
     private Workbook workBook;
     private String path;
 
+    private XSSFWorkbook xworkbook;
+
+    private XSSFSheet xworksheet;
+
+
     public ExcelUtil(String path, String sheetName) {
         this.path = path;
         try {
@@ -37,6 +43,23 @@ public class ExcelUtil {
         }
     }
 
+    public ExcelUtil(String path, String sheetName,boolean isXlsx) {
+        this.path = path;
+        try {
+            // Open the Excel file
+            FileInputStream ExcelFile = new FileInputStream(path);
+            // Access the required test data sheet
+            xworkbook = new XSSFWorkbook(ExcelFile);
+            xworksheet = xworkbook.getSheet(sheetName);
+            // check if sheet is null or not. null means  sheetname was wrong
+            Assert.assertNotNull(xworksheet, "Sheet: \""+sheetName+"\" does not exist\n");
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public String getCellData(int rowNum, int colNum) {
         Cell cell;
         try {
@@ -47,7 +70,16 @@ public class ExcelUtil {
             throw new RuntimeException(e);
         }
     }
-
+    public String getCellData(int rowNum, int colNum,boolean isXlsx) {
+        XSSFCell xssfCell;
+        try {
+            xssfCell = xworksheet.getRow(rowNum).getCell(colNum);
+            String cellData = xssfCell.toString();
+            return cellData;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     public String[][] getDataArray() {
 
         String[][] data = new String[rowCount()][columnCount()];
@@ -101,6 +133,29 @@ public class ExcelUtil {
         return data;
     }
 
+    public List<Map<String, String>> getDataList(boolean isXlsx) {
+        // get all columns
+        List<String> columns = getColumnsNames();
+        // this will be returned
+        List<Map<String, String>> data = new ArrayList<>();
+
+        for (int i = 1; i < rowCount(); i++) {
+            // get each row
+            XSSFRow row = xworksheet.getRow(i);
+            // create map of the row using the column and value
+            // column map key, cell value --> map bvalue
+            Map<String, String> rowMap = new HashMap<String, String>();
+            for (Cell cell : row) {
+                int columnIndex = cell.getColumnIndex();
+                rowMap.put(columns.get(columnIndex), cell.toString());
+            }
+
+            data.add(rowMap);
+        }
+
+        return data;
+    }
+
     public List<String> getColumnsNames() {
         List<String> columns = new ArrayList<>();
 
@@ -110,12 +165,20 @@ public class ExcelUtil {
         return columns;
     }
 
-    public void setCellData(String value, int rowNum, int colNum) {
-        Cell cell;
-        Row row;
+    public List<String> getColumnsNames(boolean isXlsx) {
+        List<String> columns = new ArrayList<>();
+
+        for (Cell cell : xworksheet.getRow(0)) {
+            columns.add(cell.toString());
+        }
+        return columns;
+    }
+    public void setCellData(String value, int rowNum, int colNum,boolean isXlsx) {
+        XSSFCell cell;
+        XSSFRow row;
 
         try {
-            row = workSheet.getRow(rowNum);
+            row = xworksheet.getRow(rowNum);
             cell = row.getCell(colNum);
 
             if (cell == null) {
@@ -125,7 +188,7 @@ public class ExcelUtil {
                 cell.setCellValue(value);
             }
             FileOutputStream fileOut = new FileOutputStream(path);
-            workBook.write(fileOut);
+            xworkbook.write(fileOut);
 
             fileOut.close();
         } catch (Exception e) {
@@ -144,6 +207,9 @@ public class ExcelUtil {
 
     public int rowCount() {
         return workSheet.getLastRowNum()+1;
+    }
+    public int rowCount(boolean isXlsx) {
+        return xworksheet.getLastRowNum()+1;
     }
 
 }
