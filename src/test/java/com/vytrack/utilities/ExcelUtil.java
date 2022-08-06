@@ -221,10 +221,36 @@ public class ExcelUtil {
             e.printStackTrace();
         }
     }
+    public void setCellData(String value, int rowNum, int colNum) {
+        Cell cell;
+        Row row;
+
+        try {
+            row = workSheet.getRow(rowNum);
+            cell = row.getCell(colNum);
+
+            if (cell == null) {
+                cell = row.createCell(colNum);
+                cell.setCellValue(value);
+            } else {
+                cell.setCellValue(value);
+            }
+            FileOutputStream fileOut = new FileOutputStream(path);
+            workBook.write(fileOut);
+
+            fileOut.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void setCellData(String value, String columnName, int row,boolean isXlsx) {
         int column = getColumnsNames(isXlsx).indexOf(columnName);
         setCellData(value, row, column,isXlsx);
+    }
+    public void setCellData(String value, String columnName, int row) {
+        int column = getColumnsNames().indexOf(columnName);
+        setCellData(value, row, column);
     }
 
     public int columnCount() {
@@ -236,8 +262,12 @@ public class ExcelUtil {
     public int rowCount() {
         return workSheet.getLastRowNum()+1;
     }
+
+
     public int rowCount(boolean isXlsx) {
         return xworksheet.getLastRowNum()+1;
     }
+
+
 
 }

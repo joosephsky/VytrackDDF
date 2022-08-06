@@ -28,14 +28,15 @@ public class TestClass {
     public Object [][] logindata(){
        String path="src/test/resources/Vytracktestdata.xlsx";
         ExcelUtil userdata=new ExcelUtil(path,"QA3-short",true);
-        String[][] usercredentials = userdata.getDataArray();
+        String[][] usercredentials = userdata.getDataArrayWithoutFirstRow(true);
 
 
         return usercredentials;
     }
     @Test(dataProvider = "logindata")   //
-    public void datadriventestforlogin(String username, String password,String firstName, String lastName){
+    public void datadriventestforlogin(String username, String password,String firstName, String lastName) throws InterruptedException {
         System.out.println(username+" "+password+" "+firstName+" "+lastName);
+
         LoginP loginp=new LoginP();
         loginp.login(username,password);
     }
