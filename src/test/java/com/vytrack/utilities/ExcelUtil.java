@@ -135,11 +135,11 @@ public class ExcelUtil {
 
     public List<Map<String, String>> getDataList(boolean isXlsx) {
         // get all columns
-        List<String> columns = getColumnsNames();
+        List<String> columns = getColumnsNames(isXlsx);
         // this will be returned
         List<Map<String, String>> data = new ArrayList<>();
 
-        for (int i = 1; i < rowCount(); i++) {
+        for (int i = 1; i < rowCount(isXlsx); i++) {
             // get each row
             XSSFRow row = xworksheet.getRow(i);
             // create map of the row using the column and value
@@ -196,15 +196,17 @@ public class ExcelUtil {
         }
     }
 
-    public void setCellData(String value, String columnName, int row) {
-        int column = getColumnsNames().indexOf(columnName);
-        setCellData(value, row, column);
+    public void setCellData(String value, String columnName, int row,boolean isXlsx) {
+        int column = getColumnsNames(isXlsx).indexOf(columnName);
+        setCellData(value, row, column,isXlsx);
     }
 
     public int columnCount() {
         return workSheet.getRow(0).getLastCellNum();
     }
-
+    public int columnCount(boolean isXlsx) {
+        return xworksheet.getRow(0).getLastCellNum();
+    }
     public int rowCount() {
         return workSheet.getLastRowNum()+1;
     }
