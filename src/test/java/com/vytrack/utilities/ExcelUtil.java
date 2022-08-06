@@ -93,6 +93,19 @@ public class ExcelUtil {
         return data;
 
     }
+    public String[][] getDataArray(boolean isXlsx) {
+
+        String[][] data = new String[rowCount(isXlsx)][columnCount(isXlsx)];
+
+        for (int i = 0; i <rowCount(isXlsx); i++) {
+            for (int j = 0; j < columnCount(isXlsx); j++) {
+                String value = getCellData(i, j,isXlsx);
+                data[i][j] = value;
+            }
+        }
+        return data;
+
+    }
 
     //this method will return data table as 2d array
     //so we need this format because of data provider.
@@ -103,6 +116,19 @@ public class ExcelUtil {
         for (int i = 1; i < rowCount(); i++) {
             for (int j = 0; j < columnCount(); j++) {
                 String value = getCellData(i, j);
+                data[i-1][j] = value;
+            }
+        }
+        return data;
+
+    }
+    public String[][] getDataArrayWithoutFirstRow(boolean isXlsx) {
+
+        String[][] data = new String[rowCount(isXlsx)-1][columnCount(isXlsx)];
+
+        for (int i = 1; i < rowCount(isXlsx); i++) {
+            for (int j = 0; j < columnCount(isXlsx); j++) {
+                String value = getCellData(i, j,isXlsx);
                 data[i-1][j] = value;
             }
         }

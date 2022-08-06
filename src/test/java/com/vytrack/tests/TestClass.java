@@ -27,7 +27,7 @@ public class TestClass {
     @DataProvider
     public Object [][] logindata(){
        String path="src/test/resources/Vytracktestdata.xlsx";
-        ExcelUtil userdata=new ExcelUtil(path,"QA3-short");
+        ExcelUtil userdata=new ExcelUtil(path,"QA3-short",true);
         String[][] usercredentials = userdata.getDataArray();
 
 
